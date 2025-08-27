@@ -1,5 +1,5 @@
 import express from "express";
-import { purchase } from "../controller/purchase.controller";
+import { handleSuccessPayment, purchase } from "../controller/purchase.controller";
 import authMiddleware from "../utils/auth.middleware";
 const router = express.Router();
 
@@ -30,6 +30,7 @@ router.use(
   }
 );
 
+router.get("/success", handleSuccessPayment)
 router.use(authMiddleware)
 router.post("/", purchase);
 

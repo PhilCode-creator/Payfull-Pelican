@@ -9,10 +9,15 @@ const port = process.env.PORT || 3000;
 
 import userRouter from "./routers/user.router";
 import authRouter from "./routers/auth.router";
+import purchaseRouter from "./routers/purchase.router";
+import Stripe from "stripe";
 
 app.use(express.json());
 app.use("/users", userRouter);
 app.use("/auth", authRouter);
+app.use("/purchase", purchaseRouter);
+export const stripe = new Stripe(process.env.STRIPE_KEY || "");
+
 export const prisma = new PrismaClient();
 
 declare global {

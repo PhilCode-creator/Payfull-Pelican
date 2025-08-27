@@ -1,26 +1,27 @@
 import Stripe from "stripe";
-import { prisma } from "..";
+import { prisma, stripe } from "..";
 import { success } from "zod";
 
-const stripe = new Stripe(process.env.STRIPE_KEY || "");
-
-async function createCheckout(userId: string, productId: string) {
+export async function createCheckout(userId: string, productId: string) {
   const session = await stripe.checkout.sessions.create({
+    mode: "payment",
     line_items: [
       {
         price_data: {
           currency: "usd",
-          product_data: {
-            name: "T-shirt",
-          },
-          unit_amount: 2000,
+          product: productId,
+          unit_amount: 11*100,
         },
         quantity: 1,
       },
     ],
-    mode: "payment",
-    ui_mode: "embedded",
-    return_url:
-      "https://example.com/checkout/return?session_id={CHECKOUT_SESSION_ID}",
+    automatic_tax: { enabled: true },
+    metadata: { ram: "16GB", cores: "4", storage: "200GB" },
+    success_url: `${process.env.URL}/purchase/success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.URL}/cancel.html`,
   });
+
+  console.log("Session ID:", session.id);
+  console.log(session.url);
+  return session.url;
 }
